@@ -17,6 +17,7 @@ $term = $_POST['term'];
 $field = $_POST['field'];
 $xx = False;
 $term = mysql_real_escape_string($term);
+$field = mysql_real_escape_string($field);
 $sql = mysql_query("select * from links where $field like '%$term%' order by date desc");
 if($field == 'date'){
     $sql = mysql_query("select * from links where date like '%$term%' order by date desc");
