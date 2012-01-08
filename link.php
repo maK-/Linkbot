@@ -61,10 +61,35 @@ if (isset($_POST['Submit'])){
     $stat2 = mysql_query("select * from links where count = 0");
     $r = mysql_num_rows($stat2);
     echo'<p align="center"><font face="Comic Sans MS" color="#D8D8D8">Total number of Images: '.$r.'</font></p>';
+    
+    $stat2 = mysql_query("select * from links where link like '%youtu%'");
+    $zz = mysql_num_rows($stat2);
+    $stat4 = mysql_query("select * from links where link like '%imgur%'");
+    $zzz =  mysql_num_rows($stat4);
+    
+    echo '<p align="center"><font face="Comic Sans MS" color="#D8D8D8">Youtube:'.$zz.'&nbsp;&nbsp;&nbsp;Imgur:'.$zzz.'</font></p>';
+    
+    $stat5 = mysql_query("select * from links group by user order by count(user) desc limit 1");
+    $theUser = mysql_fetch_array($stat5);
+    $rrr = $theUser['user'];
+    $stat5 =  mysql_query("select * from links where user like '".$rrr."'");
+    $zzzz = mysql_num_rows($stat5);
+    print('<p align="center"><font face="Comic Sans MS" color="#D8D8D8">Biggest Linker:&nbsp;&nbsp;'.$rrr.' with '.$zzz.' links.</font></p>');
+    
+     $stat6 = mysql_query("select * from links where date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY) group by user order by count(user) desc limit 1");
+    $User = mysql_fetch_array($stat6);
+    $rrrr = $User['user'];
+    $stat6 =  mysql_query("select * from links where user like '".$rrrr."' and date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY)");
+    $zzzzz = mysql_num_rows($stat6);
+    print('<p align="center"><font face="Comic Sans MS" color="#D8D8D8">Biggest Linker today:&nbsp;&nbsp;'.$rrrr.' with '.$zzzzz.' links</font></p>');
+    
 ?>
 
 <p align="center"><a href="http://www.redbrick.dcu.ie/~mak/" target="_blank"><font size="5" face="Comic Sans MS" color="#D8D8D8">Home</font></a></p>
+
+
 </body>
 </html>
+
 
 
