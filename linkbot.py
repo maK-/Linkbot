@@ -144,11 +144,12 @@ while True:
     if(line[0]=='PING'):
         s.send('PONG '+line[1]+'\r\n')
         serverval = line[1]
-        
-    if(line[3]==':!link')and len(line)==4:
-        imp = randLink()
-        s.send('PRIVMSG #bots :'+getName(line[0])+': 16Link7=>'+imp+'\r\n')
-        
+    try:    
+	if(line[3]==':!link')and len(line)==4:
+		imp = randLink()
+	        s.send('PRIVMSG #bots :'+getName(line[0])+': 16Link7=>'+impr+'\r\n')
+    except IndexError, e:
+        pass
     if(line[1]=='PRIVMSG') and len(line) > 2:
         nix = getName(line[0])
         if nix != 'linkbot':
