@@ -71,8 +71,7 @@ def verifyLink(url):
             return 'Image'
     except IOError, e:
         return '404'
-
-#prevent xss               
+                 
 class TextExtracter(SGMLParser):
     def __init__(self):
         self.text = []
@@ -81,8 +80,7 @@ class TextExtracter(SGMLParser):
         self.text.append(data)
     def getvalue(self):
         return ''.join(ex.text)
- 
-#stop timeout       
+        
 def pong():
     try:
         x = Timer(175.0, pong)
@@ -104,11 +102,12 @@ def addLink(url,title,user,count):
     if count == '':
         count = '1'
     con = None
-    try:
+    try:    
         con = _mysql.connect('mysql-location','mak','password','mak')
+        title = replace(title,keysss)
         con.query("INSERT INTO links (link, title, user, count) VALUES ('"+url+"', '"+title+"', '"+user+"', '"+count+"')")
-        result = con.use_result()    
-        print result
+        result = con.use_result()
+        print('Added.')   
     except _mysql.Error, e:
         print "Error %d: %s" % (e.args[0], e.args[1])
 
@@ -116,27 +115,22 @@ def addLink(url,title,user,count):
         if con:
             con.close()
             
-"""def checkLink(url):
-    k = {"(":"","'":"",",":"",")":""}
-    con = None
-    con = mdb.connect('mysql-location','mak','password','mak')
-    cur = con.cursor()
-    cur.execute("SELECT link FROM links")
-    rows = cur.fetchall()
-    for row in rows:
-        row = replace(row,k)
-        print row
-        if url == row:
-            return False
-    con.close()
-    return True"""
+def randLink():
+    key={"(('":"","',),)":""}
+    con = _mysql.connect('mysql-location','mak','password','mak')
+    con.query("select link from links order by RAND() limit 1")
+    res = con.use_result()
+    resu = str(res.fetch_row())
+    resu = replace(resu, key)
+    print(resu)
+    return resu
     
 pong() 
 while True:
     viewcount = ''
     nix = ''
     link = '' #stores link
-    head = '12Title: ' #type of link
+    head = '12Title: ' #lobbyype of link
     totalLink = '' #For file storage
     tochannel = '#bots'
     readbuffer=readbuffer+s.recv(4096)
@@ -151,91 +145,96 @@ while True:
         s.send('PONG '+line[1]+'\r\n')
         serverval = line[1]
         
+    if(line[3]==':!link')and len(line)==4:
+        imp = randLink()
+        s.send('PRIVMSG #bots :'+getName(line[0])+': 16Link7=>'+imp+'\r\n')
+        
     if(line[1]=='PRIVMSG') and len(line) > 2:
         nix = getName(line[0])
-        for n in range(3,len(line)):
-            if 'http://' in line[n] or 'https://' in line[n]:
-                link = line[n]
-                if n == 3:
-                    l = line[n]
-                    link = l[1:]
-                    
-            if 'www.' in line[n] and 'http://' not in line[n]:
-                link = 'http://'+line[n]
-                if n == 3:
-                    l = line[n]
-                    link = 'http://'+l[1:]
-                            
-        if link != '':  
-            link = replace(link, keysss)
-            isLink = verifyLink(link)
-            if isLink == 'Page':
-                t = getTitle(link)  #Get the title of the webpage
-                t = string.strip(t)
-                t = replace(t, keysss)
-            
-                #Custom coloured headings
-                if '- YouTube' in t:
-                    head = '1,16You16,5Tube: '
-                    z = string.split(t, '- YouTube')
-                    t = z[0]
-                    tochannel = '#lobby'
-                if 'Redbrick' in t or 'redbrick' in t :
-                    head = '5Redbrick: '
-                    z = string.split(t, '|')
-                    t = z[0]
-                if 'xkcd' in t:
-                    head = '15xkcd: '
-                    z = string.split(t, ':')
-                    t = z[1]
-                    tochannel ='#lobby'
-                if ' - Imgur' in t:
-                    head = '16imgur: '
-                    z = string.split(t, ' - Imgur')
-                    t = z[0]
-                if ' | Techdirt' in t:
-                    head = '2Tech12dirt: '
-                    z = string.split(t, ' | Techdirt')
-                    t = z[0]            
-                if 'www.google.' in link:
-                    head = '2,15G5,15o7,15o2,15g3,15l5,15e: '
-                if 'http://www.reddit.com/' in link:
-                    head = '15ಠ_ಠ: '
-                if 'http://www.rte.ie/' in link:
-                    head = '16,2RTE: '
-                    z = string.split(t, ' - RT')
-                    t = z[0]
-                if '| guardian.co.uk' in link:
-                    head = '4the5guardian: '
-                    z = string.split(t,'| guardian.co.uk')
-                    t = z[0]
-                if 'http://tinyurl.com' in link and len(link) > 20:
-                    tochannel = '#lobby'
+        if nix != 'linkbot':
+            for n in range(3,len(line)):
+                if 'http://' in line[n] or 'https://' in line[n]:
+                    link = line[n]
+                    if n == 3:
+                        l = line[n]
+                        link = l[1:]
+                        
+                if 'www.' in line[n] and 'http://' not in line[n]:
+                    link = 'http://'+line[n]
+                    if n == 3:
+                        l = line[n]
+                        link = 'http://'+l[1:]
+                                
+            if link != '':  
+                link = replace(link, keysss)
+                isLink = verifyLink(link)
+                if isLink == 'Page':
+                    t = getTitle(link)  #Get the title of the webpage
+                    t = string.strip(t)
+                    t = replace(t, keysss)
+                
+                    #Custom coloured headings
+                    if '- YouTube' in t:
+                        head = '1,16You16,5Tube: '
+                        z = string.split(t, '- YouTube')
+                        t = z[0]
+                        tochannel = '#lobby'
+                    if 'Redbrick' in t or 'redbrick' in t :
+                        head = '5Redbrick: '
+                        z = string.split(t, '|')
+                        t = z[0]
+                    if 'xkcd' in t:
+                        head = '15xkcd: '
+                        z = string.split(t, ':')
+                        t = z[0]
+                        tochannel ='#lobby'
+                    if ' - Imgur' in t:
+                        head = '16imgur: '
+                        z = string.split(t, ' - Imgur')
+                        t = z[0]
+                    if ' | Techdirt' in t:
+                        head = '2Tech12dirt: '
+                        z = string.split(t, ' | Techdirt')
+                        t = z[0]            
+                    if 'www.google.' in link:
+                        head = '2,15G5,15o7,15o2,15g3,15l5,15e: '
+                    if 'http://www.reddit.com/' in link:
+                        head = '15ಠ_ಠ: '
+                    if 'http://www.rte.ie/' in link:
+                        head = '16,2RTE: '
+                        z = string.split(t, ' - RT')
+                        t = z[0]
+                    if '| guardian.co.uk' in link:
+                        head = '4the5guardian: '
+                        z = string.split(t,'| guardian.co.uk')
+                        t = z[0]
+                    if 'http://tinyurl.com' in link and len(link) > 20:
+                        tochannel = '#lobby'
 
-                if t != '' and link != '':                
-                    #if link hasn't been before add it to file
-                    if len(t) <= 240:
-                        ex = TextExtracter()
-                        ex.feed(t)
-                        totalLin = ex.getvalue()
-                        print(t)                        
-                                            
-                        if tochannel != '#lobby':
-                            s.send('PRIVMSG '+tochannel+' :5['+link+'5] '+head+t+'\r\n')
-                            addLink(link, t, nix, viewcount)
-                            
-                        else:
-                            s.send('PRIVMSG '+tochannel+' :'+head+t+'\r\n')
-                            addLink(link, t, nix, viewcount)
-                    
-            if isLink == 'Image':
-                if('.jpg' in link)or('.jpeg' in link)or('.png' in link)or('.gif' in link):                        
-                    try:
-                        linkx = string.split(link,'/')
-                        t = linkx[len(linkx)-1]
-                        print(t)
-                        addLink(link, t, nix, '0')
-                    except IndexError, e:
-                        pass
-            if isLink == '404':
-                pass
+                    if t != '' and link != '':                
+                        #if link hasn't been before add it to file
+                        if len(t) <= 240:
+                            ex = TextExtracter()
+                            ex.feed(t)
+                            totalLin = ex.getvalue()
+                            print(t)                        
+                                                
+                            if tochannel != '#lobby':
+                                s.send('PRIVMSG '+tochannel+' :5['+link+'5] '+head+t+'\r\n')
+                                addLink(link, t, nix, viewcount)
+                                
+                            else:
+                                s.send('PRIVMSG '+tochannel+' :'+head+t+'\r\n')
+                                addLink(link, t, nix, viewcount)
+                        
+                if isLink == 'Image':
+                    if('.jpg' in link)or('.jpeg' in link)or('.png' in link)or('.gif' in link):                        
+                        try:
+                            linkx = string.split(link,'/')
+                            t = linkx[len(linkx)-1]
+                            print(t)
+                            addLink(link, t, nix, '0')
+                        except IndexError, e:
+                            pass
+                if isLink == '404':
+                    pass
