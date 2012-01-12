@@ -74,7 +74,7 @@ if (isset($_POST['Submit'])){
     $rrr = $theUser['user'];
     $stat5 =  mysql_query("select * from links where user like '".$rrr."'");
     $zzzz = mysql_num_rows($stat5);
-    print('<p align="center"><font face="Comic Sans MS" color="#D8D8D8">Biggest Linker:&nbsp;&nbsp;'.$rrr.' with '.$zzz.' links.</font></p>');
+    print('<p align="center"><font face="Comic Sans MS" color="#D8D8D8">Biggest Linker:&nbsp;&nbsp;'.$rrr.' with '.$zzzz.' links.</font></p>');
     
      $stat6 = mysql_query("select * from links where date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY) group by user order by count(user) desc limit 1");
     $User = mysql_fetch_array($stat6);
